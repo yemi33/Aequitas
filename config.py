@@ -12,7 +12,7 @@ sensitive_param_name = "SEX"
 
 col_to_be_predicted = "default payment next month"
 
-classifier_name = 'CCClient_Model_Original.pkl'
+classifier_name = 'CCClient_Model_Original_Improved.pkl'
 
 original_inputs = "CCClient.csv"
 

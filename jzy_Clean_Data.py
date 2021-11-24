@@ -17,7 +17,6 @@ cat_feature = list(df.columns)
 for col in cat_feature:
     df[col]=le.fit_transform(df[col])
 
-df["SEX"].replace({0 : -1}, inplace=True)
 df["default payment next month"].replace({0 : -1}, inplace=True)
 
 col_to_be_predicted = "default payment next month"

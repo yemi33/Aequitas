@@ -11,7 +11,7 @@ classifier_name = config.classifier_name
 model = joblib.load(classifier_name)
 input_bounds = config.input_bounds
 num_params = config.num_params
-sensitive_param_idx = config.sensitive_param_idx_idx
+sensitive_param_idx = config.sensitive_param_idx
 
 def get_random_input():
     x = []
