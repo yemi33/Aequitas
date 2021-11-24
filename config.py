@@ -4,17 +4,17 @@ import utils
 Employee
 '''
 
-num_params = 8 # exclude "y" col
+num_params = 23 # exclude "y" col
 
-sensitive_param_idx = 5 # Starts at O
+sensitive_param_idx = 1 # Starts at O
 
-sensitive_param_name = "Gender"
+sensitive_param_name = "SEX"
 
-col_to_be_predicted = "LeaveOrNot"
+col_to_be_predicted = "default payment next month"
 
-classifier_name = 'Employee_DecisionTree_Original.pkl'
+classifier_name = 'CCClient_Model_Original.pkl'
 
-original_inputs = "Employee.csv"
+original_inputs = "CCClient.csv"
 
 column_names = utils.get_column_names(original_inputs)
 
@@ -26,7 +26,7 @@ threshold = 0
 
 perturbation_unit = 1
 
-retraining_inputs = "Employee_Retraining_Dataset.csv" # need to be modified after running Aequitas
+retraining_inputs = "CCClient_Retraining_Dataset.csv" # need to be modified after running Aequitas
 
 
 

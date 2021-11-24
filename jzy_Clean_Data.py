@@ -26,4 +26,21 @@ y=df[col_to_be_predicted]
 
 df.to_csv(path_or_buf="CCClient.csv", index=False)
 
-print(df)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,random_state=12)
+
+model= DecisionTreeClassifier(random_state=42,criterion='entropy',splitter='random')
+model.fit(X_train,y_train)
+
+pred=model.predict(X_test)
+
+scores=[]
+scores.append({
+        'model': 'DecisionTreeClassifier',
+        'score': model.score(X_test,y_test),
+        'f1_score' : f1_score(y_test,pred)
+    })
+
+model.score(X_test, y_test)
+
+file_to_save_model = "CCClient_Model_Original.pkl"
+joblib.dump(model, file_to_save_model)
