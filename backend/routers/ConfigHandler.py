@@ -68,8 +68,8 @@ class ConfigHandler(Resource):
     #   -- Send name of config file to RunHandler
     
     # return the results
+    
     return {
       'status': 'Success',
-      'message': datasetName
-      # Should this be the config name instead? Check how this works. 
+      'submittedFile': str(datasetName)  # Should this be the config name instead? Check how this works. 
     }
