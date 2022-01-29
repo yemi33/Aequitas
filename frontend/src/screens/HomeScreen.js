@@ -35,7 +35,7 @@ export default function HomeScreen() {
   };
 
   const exampleDatasetSubmitHandler = async (e) => {
-    const filename = 'Employee.csv';
+    const filename = "Employee.csv";
     dispatch(submitFile(filename));
     setUploadSuccess(false);
   };
@@ -90,17 +90,18 @@ export default function HomeScreen() {
                   ""
                 )}
               </div>
-              <div className="col-md-4" style={{marginTop: '1rem'}}>
+              <div className="col-md-4" style={{ marginTop: "1rem" }}>
                 <button
                   className="btn btn-lg btn-link"
                   type="button"
                   onClick={exampleDatasetSubmitHandler}
                 >
-                  Or..try this example! <br/>
+                  Or..try this example! <br />
                 </button>
                 <label className="text-center">
-                  <strong>Employee.csv</strong> <br/>
-                  Dataset to determine the retention factor of employees within two years
+                  <strong>Employee.csv</strong> <br />
+                  Dataset to determine the retention factor of employees within
+                  two years
                 </label>
               </div>
             </div>
