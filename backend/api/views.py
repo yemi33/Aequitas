@@ -2,8 +2,11 @@
 from django.views.decorators.csrf import csrf_exempt
 import os
 import sys
-os.chdir('api/aequitas')
-sys.path.append(os.getcwd())
+
+if 'aequitas' not in os.getcwd():
+  os.chdir('api/aequitas')
+  sys.path.append(os.getcwd())
+  
 import Retrain_Sklearn
 import Sklearn_Estimation
 import config
@@ -14,6 +17,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, FileResponse, JsonResponse
 from django.core.files import File
 
+import pandas as pd
 # Create your views here.
 
 
@@ -39,23 +43,18 @@ def uploadDataset(request):
 def configureAequitas(request):
     if request.method == 'GET':
       datasetName = request.GET['filename']
-      # TODO: Implement configuration
-      """
-      This section is, at the moment, a combination of the UploadHandler and
-      ConfigHandler APIs. Will sort out after getting thoughts in order, 
-      prior to code outlining stage of development.
-      NOTE: Figure out which steps should be in UploadHandler intead
-      """
-      # TODO: Get information for user convenience
-      # -- Make sure file with given name exists, throw error if not.
-      # -- Check that file size does not exceed size limit.
-      # -- Get column labels.
-      #   -- Makes sure first non-empty row of csv contains only strings.
-      #     -- Handle if user inputs label-less file.
-      #     -- Handle if user inputs empty csv file.
-      # -- Makes sure that each column contains identically typed values.
-      #   -- Allow doubles and ints in same column?
-      #   -- How should we handling empty column entries?
+      # TODO Make sure file with given name exists
+      with open(f'TrainingInputs/{datasetName}', 'r') as destination:
+        # TODO Check that file size does not exceed size limit.
+        # TODO Throw error if file not found.
+        df=pd.read_csv(destination,sep=',')
+      # Get column labels.
+      # TODO Makes sure first non-empty row of csv contains only strings.
+      # TODO Handle if user inputs label-less file.
+      # TODO Handle if user inputs empty csv file.
+      columnLabels = df.columns.values.tolist()
+      # TODO How should we handling empty column entries?
+
       # TODO: Get information for config menu setup
       # -- Send Labels to configuration setup page
       #   -- Create dictionary/array with each column label "columnLabels"
@@ -68,7 +67,42 @@ def configureAequitas(request):
       #   -- coulmn_ret = {"status": "Success", "message": columnLabels}
       #   -- Use this to create drop-down selectors for config page later.
       #   -- Return this and success message to the user.
+      # Create drop down dictionary
+      dropDownInfo = {}
+      MAX_CATEGORIES = 100
+      for i in range(len(columnList)):
+	      # Get information about one given column
+        # TODO Right now does not handle input security
+        colName, colType = columnLabels[i], df[colName].dtype
+        numValues = len(df[colName].unique())
 
+        # Determine drop-down options that each type will have available
+        toAppend = []
+        if (colType == "object"):
+          if (numValues < MAX_CATEGORIES):
+            toAppend.append(f"Categorical (distinct values: {numValues})")
+        elif (colType == "int64"):
+          toAppend.append(f"Contiguous")
+          if (numValues < MAX_CATEGORIES):
+            toAppend.append(f"Categorical (distinct values: {numValues})")
+        elif (colType == "float64"):
+          toAppend.append(f"Contiguous")
+        else:
+          # TODO FIX THIS LATER
+          toAppend.append(f"ERROR for column \"{colName}\"")
+        
+        # Using this information, add to drop-down dictionary
+        if len(toAppend) != 0:
+          dropDownInfo[colName] = toAppend
+
+      # TODO: Implement configuration
+     
+      
+
+      """
+      Gathering information in order to run aequitas.
+      NOTE: below will be in the runHandler instead, and will not rely on a config file
+      """
       # TODO: Write drop-down values and previously saved values
       #   to the config file
       # -- Write to Config File
