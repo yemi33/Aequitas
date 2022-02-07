@@ -6,13 +6,12 @@ import {
   downloadRetrainDataset,
   downloadRetrainModel,
 } from "../actions/downloadActions";
-import ExplainRetrainedModel from "../components/ExplainRetrainedModel";
-import ExplainRetrainingDataset from "../components/ExplainRetrainingDataset";
+import Footer from "../components/Footer";
 import Header from "../components/Header";
 import OurNavbar from "../components/OurNavbar";
 
 export default function ResultScreen() {
-  const { filename } = useParams();
+  const { jobId } = useParams();
   const result = useSelector((state) => state.aequitasRunResult);
   const { aequitasRunResult, loading, error } = result;
 
@@ -29,9 +28,7 @@ export default function ResultScreen() {
   return (
     <div>
       <OurNavbar></OurNavbar>
-      <Header
-        child={<h1 className="display-4">Aequitas Results for {filename}</h1>}
-      ></Header>
+      <Header>Aequitas Results for {aequitasRunResult.datasetName} JobId: {jobId}</Header>
       <div className="container-md">
         <div className="row">
           <div className="col">
@@ -111,6 +108,7 @@ export default function ResultScreen() {
           </div>
         </div>
       </div>
+      <Footer></Footer>
     </div>
   );
 }
