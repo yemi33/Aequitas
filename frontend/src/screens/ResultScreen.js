@@ -6,32 +6,55 @@ import {
   downloadRetrainDataset,
   downloadRetrainModel,
 } from "../actions/downloadActions";
-import ExplainRetrainedModel from "../components/ExplainRetrainedModel";
-import ExplainRetrainingDataset from "../components/ExplainRetrainingDataset";
+import { deleteAequitasResult, getAequitasResult } from "../actions/aequitasActions";
+import Footer from "../components/Footer";
 import Header from "../components/Header";
+import LoadingBox from "../components/LoadingBox";
 import OurNavbar from "../components/OurNavbar";
+import { DELETE_AEQUITAS_RESULT_RESET } from "../constants/aequitasConstants";
 
 export default function ResultScreen() {
-  const { filename } = useParams();
-  const result = useSelector((state) => state.aequitasRunResult);
-  const { aequitasRunResult, loading, error } = result;
+  const { jobId } = useParams();
 
   const dispatch = useDispatch();
+  const result = useSelector((state) => state.getAequitasResult);
+  const { aequitasRunResult, loading, error } = result;
+  const deleteResult = useSelector((state) => state.deleteAequitasResult);
+  const {
+    loading: deleteResultLoading,
+    success: deleteResultSuccess,
+    message: deleteResultMessage,
+  } = deleteResult;
 
+  const [resultReady, setResultReady] = useState(false);
+  useEffect(() => {
+    if (!aequitasRunResult) {
+      dispatch(getAequitasResult(jobId));
+    } else {
+      setResultReady(true);
+    }
+  }, [aequitasRunResult]);
+  
   const downloadDatasetHandler = () => {
-    dispatch(downloadRetrainDataset(aequitasRunResult.retrainFilename));
+    dispatch(downloadRetrainDataset(aequitasRunResult.retrainFilename, jobId));
   };
 
   const downloadRetrainedModelHandler = () => {
-    dispatch(downloadRetrainModel(aequitasRunResult.retrainModelName));
+    dispatch(downloadRetrainModel(aequitasRunResult.retrainModelName, jobId));
   };
 
-  return (
+  window.addEventListener("beforeunload", function (e) {
+    e.preventDefault();
+    e.returnValue = "";
+    dispatch(deleteAequitasResult(jobId));
+  });
+
+  return resultReady ? (
     <div>
       <OurNavbar></OurNavbar>
-      <Header
-        child={<h1 className="display-4">Aequitas Results for {filename}</h1>}
-      ></Header>
+      <Header>
+        Aequitas Results for {aequitasRunResult.datasetName} JobId: {jobId}
+      </Header>
       <div className="container-md">
         <div className="row">
           <div className="col">
@@ -66,8 +89,8 @@ export default function ResultScreen() {
           </div>
           <div className="row">
             <div className="col">
-              <div class="card" style={{ width: "18rem" }}>
-                <div class="card-body">
+              <div className="card" style={{ width: "18rem" }}>
+                <div className="card-body">
                   <h5 className="card-title">Improved Dataset</h5>
                   <p className="card-text">
                     This is the dataset containing the discriminatory inputs
@@ -88,8 +111,8 @@ export default function ResultScreen() {
               </div>
             </div>
             <div className="col">
-              <div class="card" style={{ width: "18rem" }}>
-                <div class="card-body">
+              <div className="card" style={{ width: "18rem" }}>
+                <div className="card-body">
                   <h5 className="card-title">Improved Dataset</h5>
                   <p className="card-text">
                     This is the model that has been improved fairness by
@@ -110,7 +133,9 @@ export default function ResultScreen() {
             </div>
           </div>
         </div>
+        <br/><br/>
       </div>
+      <Footer></Footer>
     </div>
-  );
+  ): "";
 }
