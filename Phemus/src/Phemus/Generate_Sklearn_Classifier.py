@@ -11,7 +11,8 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 
-from Dataset import Dataset
+# from Dataset import Dataset  # --> MICHAEL LOCAL EXPERIMENTATION
+from .Dataset import Dataset  # --> MICHAEL USE THIS OTHERWISE
 
 def generate_sklearn_classifier(dataset: Dataset, cleaned_csv_dir, output_pkl_dir):
     input_csv_dir = dataset.dataset_dir

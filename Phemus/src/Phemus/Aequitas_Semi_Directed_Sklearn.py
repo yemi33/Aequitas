@@ -6,8 +6,10 @@ import numpy as np
 import random
 import time
 from scipy.optimize import basinhopping
-from mpFully_Direct import mp_basinhopping
-from Dataset import Dataset
+# from mpFully_Direct import mp_basinhopping  # --> MICHAEL LOCAL EXPERIMENTATION
+# from Dataset import Dataset  # --> MICHAEL LOCAL EXPERIMENTATION
+from .mpFully_Direct import mp_basinhopping  # --> MICHAEL USE THIS OTHERWISE
+from .Dataset import Dataset  # --> MICHAEL USE THIS OTHERWISE
 import joblib
 def warn(*args, **kwargs):
     pass
@@ -80,11 +82,10 @@ class Semi_Direct:
         return x
     
     def global_discovery(self, x):
-        for i in range(len(self.input_bounds)):
-            random.seed(time.time())
-            x[i] = random.randint(self.input_bounds[i][0], self.input_bounds[i][1])
-
-        x[self.sensitive_param_idx] = 0
+        sensitive_param_idx = self.sensitive_param_idx
+        random.seed(time.time())
+        x = [random.randint(low,high) for [low, high] in self.input_bounds]
+        x[sensitive_param_idx] = 0
         return x
 
     def evaluate_input(self, inp):
@@ -108,21 +109,17 @@ class Semi_Direct:
                     inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
                     inp0delY = np.reshape(inp0delY, (1, -1))
                     inp1delY = np.reshape(inp1delY, (1, -1))
-                    
 
                     out0 = self.model.predict(inp0delY)
                     out1 = self.model.predict(inp1delY)
                 
                     if abs(out1 + out0):
                         return abs(out1 + out0)
-        return 0
+        return False
 
     def evaluate_global(self, inp):
         inp0 = [int(i) for i in inp]
-        inp1 = [int(i) for i in inp]
-        
         inp0[self.sensitive_param_idx] = 0
-        
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
         self.tot_inputs.add(tuple(map(tuple, inp0np)))
@@ -161,10 +158,7 @@ class Semi_Direct:
         
     def evaluate_local(self,  inp):
         inp0 = [int(i) for i in inp]
-        inp1 = [int(i) for i in inp]
-
-        inp0[self.sensitive_param_idx] = 0
-        
+        inp0[self.sensitive_param_idx] = 0  
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
         self.tot_inputs.add(tuple(map(tuple, inp0np)))

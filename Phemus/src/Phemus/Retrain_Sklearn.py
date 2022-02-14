@@ -10,7 +10,8 @@ from sklearn.preprocessing import LabelEncoder
 # import pandas as pd
 # from dataclasses import dataclass
 
-from Dataset import Dataset
+# from Dataset import Dataset  # --> MICHAEL LOCAL EXPERIMENTATION
+from .Dataset import Dataset  # --> MICHAEL USE OTHERWISE
 le=LabelEncoder()
 def warn(*args, **kwargs):
     pass
@@ -24,18 +25,16 @@ def extract_inputs(dataset: Dataset, input_csv_dir):
     
     X = []
     Y = []
-    i = 0
     neg_count = 0
     pos_count = 0
     
-    for line in df:
+    for i, line in enumerate(df):
         if (i == 0): # first row, col name, skip
-            i += 1
             continue
         line = line.strip().split(",")
         L = list(map(int, line[:col_to_be_predicted_idx] + line[col_to_be_predicted_idx + 1:])) # exclude col to be predicted 
         X.append(L)
-        if (int(line[col_to_be_predicted_idx]) == -1): # this is where the y column needs to exist
+        if (int(line[col_to_be_predicted_idx]) == 0): # this is where the y column needs to exist
             Y.append(-1)
             neg_count = neg_count + 1
         else:
@@ -53,23 +52,14 @@ def retrain(model, X_original, Y_original, X_additional, Y_additional):
     return model
 
 def get_random_input(dataset: Dataset):
-    num_params = dataset.num_params
-    input_bounds = dataset.input_bounds
     sensitive_param_idx = dataset.sensitive_param_idx
-
-    x = []
-    for i in range(len(input_bounds)):
-        random.seed(time.time())
-        x.append(random.randint(input_bounds[i][0], input_bounds[i][1]))
-
+    random.seed(time.time())
+    x = [random.randint(low,high) for [low, high] in dataset.input_bounds]
     x[sensitive_param_idx] = 0
     return x
 
 def evaluate_input(inp, model, dataset: Dataset):
     sensitive_param_idx = dataset.sensitive_param_idx
-
-    inp0 = [int(i) for i in inp]
-    inp1 = [int(i) for i in inp]
 
     for i in range(dataset.input_bounds[sensitive_param_idx][1] + 1):
         for j in range(dataset.input_bounds[sensitive_param_idx][1] + 1):
@@ -100,20 +90,18 @@ def evaluate_input(inp, model, dataset: Dataset):
     # return (abs(out0 - out1) > threshold)
     # for binary classification, we have found that the
     # following optimization function gives better results
-    return 0
+    return False
 
 def get_estimate(model, dataset: Dataset, num_trials, samples):
     estimate_array = []
     rolling_average = 0.0
     for i in range(num_trials):
         disc_count = 0
-        total_count = 0
         for j in range(samples):
-            total_count = total_count + 1
             if(evaluate_input(get_random_input(dataset), model, dataset)):
-                disc_count = disc_count + 1
+                disc_count += 1
 
-        estimate = float(disc_count)/total_count
+        estimate = float(disc_count)/samples
         rolling_average = ((rolling_average * i) + estimate)/(i + 1)
         estimate_array.append(estimate)
 
@@ -165,8 +153,6 @@ def retrain_search(model, dataset: Dataset, retrain_csv_dir, num_trials, samples
 def retrain_sklearn(dataset: Dataset, input_pkl_dir, retrain_csv_dir, improved_pkl_dir, plot_dir, num_trials, samples):
     original_model = joblib.load(input_pkl_dir)
     improved_model, fairness= retrain_search(original_model, dataset, retrain_csv_dir, num_trials, samples)
-    # file_to_save_model = config.improved_classfier_name
-
     joblib.dump(improved_model, improved_pkl_dir)
 
     # display fairness improvement 

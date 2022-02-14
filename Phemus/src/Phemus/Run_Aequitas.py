@@ -1,8 +1,8 @@
-from Retrain_Sklearn import retrain_sklearn
-from Aequitas_Fully_Directed_Sklearn import aequitas_fully_directed_sklearn
-from Aequitas_Semi_Directed_Sklearn import aequitas_semi_directed_sklearn
-from Aequitas_Random_Sklearn import aequitas_random_sklearn
-from Generate_Sklearn_Classifier import generate_sklearn_classifier
+from .Retrain_Sklearn import retrain_sklearn
+from .Aequitas_Fully_Directed_Sklearn import aequitas_fully_directed_sklearn
+from .Aequitas_Semi_Directed_Sklearn import aequitas_semi_directed_sklearn
+from .Aequitas_Random_Sklearn import aequitas_random_sklearn
+from .Generate_Sklearn_Classifier import generate_sklearn_classifier
 
 from .Dataset import Dataset
 
