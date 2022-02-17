@@ -9,10 +9,9 @@ def warn(*args, **kwargs):
     pass
 import warnings
 
-# from mpFully_Direct import mp_basinhopping  # --> MICHAEL LOCAL EXPERIMENTATION
-# from Dataset import Dataset  # --> MICHAEL LOCAL EXPERIMENTATION
-from .mpFully_Direct import mp_basinhopping  # --> MICHAEL USE THIS OTHERWISE
-from .Dataset import Dataset  # --> MICHAEL USE THIS OTHERWISE
+
+from .mpFully_Direct import mp_basinhopping
+from .Dataset import Dataset
 
 from scipy.optimize import basinhopping
 
@@ -31,7 +30,6 @@ class Fully_Direct:
                         local_iteration_limit, input_pkl_dir, retrain_csv_dir):
         random.seed(time.time())
         self.start_time = time.time()
-
         self.column_names = dataset.column_names
         self.num_params = dataset.num_params
         self.input_bounds = dataset.input_bounds # contains the y column to preserve idxes!
@@ -76,115 +74,109 @@ class Fully_Direct:
 
 
     def evaluate_input(self, inp):
+        inp0 = [int(k) for k in inp]
+        sensValue = inp0[self.sensitive_param_idx]
+        inp0 = np.asarray(inp0)
+        inp0 = np.reshape(inp0, (1, -1))
+        inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
+        inp0delY = np.reshape(inp0delY, (1, -1))
+        out0 = self.model.predict(inp0delY)
+        
+        # Loops through all values of the sensitive parameter
         for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
+            if sensValue != i:
+                inp1 = [int(k) for k in inp]
+                inp1[self.sensitive_param_idx] = i
 
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
+                inp1 = np.asarray(inp1)
+                inp1 = np.reshape(inp1, (1, -1))
 
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
+                # drop y column here
+                inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
+                inp1delY = np.reshape(inp1delY, (1, -1))
 
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-                    
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
+                out1 = self.model.predict(inp1delY)
 
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-                    
-                    if abs(out1 + out0):
-                        return abs(out1 + out0)
+                if abs(out1 - out0) > self.threshold:
+                    return abs(out1 + out0)
         return False
 
     def evaluate_global(self, inp):
         inp0 = [int(i) for i in inp]
-        inp1 = [int(i) for i in inp]
-        
-        try:
-            inp0[self.sensitive_param_idx] = 0
-        except:
-            return False
-        
+        sensValue = inp0[self.sensitive_param_idx]
+
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
         self.tot_inputs.add(tuple(map(tuple, inp0np)))
 
-        for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
+        inp0 = np.asarray(inp0)
+        inp0 = np.reshape(inp0, (1, -1))
 
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
+        # Returns early if input is already in the global discriminatory inputs set
+        if (tuple(map(tuple, inp0)) in self.global_disc_inputs):
+            return 0
+        
+        inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
+        inp0delY = np.reshape(inp0delY, (1, -1))
+        out0 = self.model.predict(inp0delY)
+        
+        # Loops through all values of the sensitive parameter
+        for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):   
+            if i != sensValue: 
+                inp1 = [int(k) for k in inp]
+                inp1[self.sensitive_param_idx] = i
+                inp1 = np.asarray(inp1)
+                inp1 = np.reshape(inp1, (1, -1))
+                
+                # drop y column here 
+                inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
+                inp1delY = np.reshape(inp1delY, (1, -1))
+                out1 = self.model.predict(inp1delY)
 
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-                    
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-
-                    if (abs(out0 - out1) > self.threshold and tuple(map(tuple, inp0)) not in self.global_disc_inputs):
-                        self.global_disc_inputs.add(tuple(map(tuple, inp0))) # add the entire input, including original y
-                        self.global_disc_inputs_list.append(inp0.tolist()[0])
-                        return abs(out1 + out0)
-
+                if (abs(out0 - out1) > self.threshold):
+                    self.global_disc_inputs.add(tuple(map(tuple, inp0))) # add the entire input, including original y
+                    self.global_disc_inputs_list.append(inp0.tolist()[0])
+                    return abs(out1 + out0)
         return 0
         
     def evaluate_local(self,  inp):
         inp0 = [int(i) for i in inp]
-        inp0[self.sensitive_param_idx] = 0
+        sensValue = inp0[self.sensitive_param_idx]
+
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
+
         self.tot_inputs.add(tuple(map(tuple, inp0np)))
+
+        inp0 = np.asarray(inp0)
+        inp0 = np.reshape(inp0, (1, -1))
         
+        # Returns early if input is already in the global or local discriminatory inputs set
+        if ((tuple(map(tuple, inp0)) in self.global_disc_inputs) or (tuple(map(tuple, inp0)) in self.local_disc_inputs)):
+            return 0
+        
+        inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
+        inp0delY = np.reshape(inp0delY, (1, -1))
+        out0 = self.model.predict(inp0delY)
+        
+        # Loops through all values of the sensitive parameter
         for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
+            if sensValue != i: 
+                inp1 = [int(k) for k in inp]
+                inp1[self.sensitive_param_idx] = i
+                inp1 = np.asarray(inp1)
+                inp1 = np.reshape(inp1, (1, -1))
 
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
+                # drop y column here 
+                inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
+                inp1delY = np.reshape(inp1delY, (1, -1))
 
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
+                out1 = self.model.predict(inp1delY)
 
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-                    
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-                
-                    if (abs(out0 - out1) > self.threshold and (tuple(map(tuple, inp0)) not in self.global_disc_inputs)
-                        and (tuple(map(tuple, inp0)) not in self.local_disc_inputs)):
-                        self.local_disc_inputs.add(tuple(map(tuple, inp0)))
-                        self.local_disc_inputs_list.append(inp0.tolist()[0])
-                        
-                        return abs(out0 + out1)
+                if abs(out0 - out1) > self.threshold:
+                    self.local_disc_inputs.add(tuple(map(tuple, inp0)))
+                    self.local_disc_inputs_list.append(inp0.tolist()[0])
+                    return abs(out0 + out1)
         return 0
 
     def global_discovery(self, x, stepsize = 1):
@@ -259,7 +251,7 @@ def aequitas_fully_directed_sklearn(dataset: Dataset, perturbation_unit, thresho
         print("Percentage discriminatory inputs - " + str(float(len(fully_direct.global_disc_inputs_list) + len(fully_direct.local_disc_inputs_list))
                                                       / float(len(fully_direct.tot_inputs))*100))
 
-    #fully_direct = mp_basinhopping(fully_direct, minimizer, local_iteration_limit)
+    # fully_direct = mp_basinhopping(fully_direct, minimizer, local_iteration_limit)
     # save the discriminatory inputs to file
     column_names = dataset.column_names
     f = open(retrain_csv_dir, 'w')
@@ -282,3 +274,6 @@ def aequitas_fully_directed_sklearn(dataset: Dataset, perturbation_unit, thresho
     print("Total Inputs are " + str(len(fully_direct.tot_inputs)))
     print("Number of discriminatory inputs are " + str(len(fully_direct.global_disc_inputs_list)
                                                             +len(fully_direct.local_disc_inputs_list)))
+    print("")
+
+    

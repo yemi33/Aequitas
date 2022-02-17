@@ -8,10 +8,9 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-# from mpFully_Direct import mp_basinhopping  # --> MICHAEL LOCAL EXPERIMENTATION
-# from Dataset import Dataset  # --> MICHAEL LOCAL EXPERIMENTATION
-from .mpFully_Direct import mp_basinhopping  # --> MICHAEL USE THIS OTHERWISE
-from .Dataset import Dataset  # --> MICHAEL USE THIS OTHERWISE
+
+from .mpFully_Direct import mp_basinhopping
+from .Dataset import Dataset
 
 from scipy.optimize import basinhopping
 # from random import seed, shuffle
@@ -81,80 +80,82 @@ class Random_Select:
         
     def evaluate_global(self, inp):
         inp0 = [int(i) for i in inp]
-        inp0[self.sensitive_param_idx] = 0
+        sensValue = inp0[self.sensitive_param_idx]
+        
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
         self.tot_inputs.add(tuple(map(tuple, inp0np)))
 
+
+        inp0 = np.asarray(inp0)
+        inp0 = np.reshape(inp0, (1, -1))
+
+        # Returns early if input is already in the global discriminatory inputs set
+        if (tuple(map(tuple, inp0)) in self.global_disc_inputs):
+            return 0
+        
+
+        inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
+        inp0delY = np.reshape(inp0delY, (1, -1))
+        out0 = self.model.predict(inp0delY)
+
+        # Loops through all values of the sensitive parameter
         for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
+            if i != sensValue: 
+                inp1 = [int(k) for k in inp]
+                inp1[self.sensitive_param_idx] = i
+                inp1 = np.asarray(inp1)
+                inp1 = np.reshape(inp1, (1, -1))
+                
+                # drop y column here 
+                inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
+                inp1delY = np.reshape(inp1delY, (1, -1))
 
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
-
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-                    
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-
-                    if (abs(out0 - out1) > self.threshold and tuple(map(tuple, inp0)) not in self.global_disc_inputs):
-                        self.global_disc_inputs.add(tuple(map(tuple, inp0)))
-                        self.global_disc_inputs_list.append(inp0.tolist()[0])
-                        self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") 
-                        return abs(out1 + out0)
-
+                out1 = self.model.predict(inp1delY)
+                if (abs(out0 - out1) > self.threshold):
+                    self.global_disc_inputs.add(tuple(map(tuple, inp0)))
+                    self.global_disc_inputs_list.append(inp0.tolist()[0])
+                    self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") 
+                    return abs(out1 + out0)
         return 0
 
     def evaluate_local(self, inp):
         inp0 = [int(i) for i in inp]
-        inp0[self.sensitive_param_idx] = 0
+        sensValue = inp0[self.sensitive_param_idx]
+
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
         self.tot_inputs.add(tuple(map(tuple, inp0np)))
+
+        inp0 = np.asarray(inp0)
+        inp0 = np.reshape(inp0, (1, -1))
+
+        # Returns early if input is already in the global or local discriminatory inputs set
+        if ((tuple(map(tuple, inp0)) in self.global_disc_inputs) or (tuple(map(tuple, inp0)) in self.local_disc_inputs)):
+            return 0
         
+        inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
+        inp0delY = np.reshape(inp0delY, (1, -1))
+        out0 = self.model.predict(inp0delY)
+
+        # Loops through all values of the sensitive parameter
         for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
+            if i < sensValue: 
+                inp1 = [int(k) for k in inp] 
+                inp1[self.sensitive_param_idx] = i
 
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
+                inp1 = np.asarray(inp1)
+                inp1 = np.reshape(inp1, (1, -1))
 
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-                
-                    if (abs(out0 - out1) > self.threshold and (tuple(map(tuple, inp0)) not in self.global_disc_inputs)
-                        and (tuple(map(tuple, inp0)) not in self.local_disc_inputs)):
-                        self.local_disc_inputs.add(tuple(map(tuple, inp0)))
-                        self.local_disc_inputs_list.append(inp0.tolist()[0])
-                        self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") 
-                        return abs(out0 + out1)
+                # drop y column here 
+                inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
+                inp1delY = np.reshape(inp1delY, (1, -1))
+                out1 = self.model.predict(inp1delY)
+                if (abs(out0 - out1) > self.threshold):
+                    self.local_disc_inputs.add(tuple(map(tuple, inp0)))
+                    self.local_disc_inputs_list.append(inp0.tolist()[0])
+                    self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") 
+                    return abs(out0 + out1)
         return 0
 
 

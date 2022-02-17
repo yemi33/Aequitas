@@ -2,8 +2,8 @@ import joblib
 import time
 import random
 import numpy as np
-# from Dataset import Dataset  # --> MICHAEL LOCAL EXPERIMENTATION
-from .Dataset import Dataset  # --> MICHAEL USE THIS OTHERWISE
+
+from .Dataset import Dataset
 def warn(*args, **kwargs):
     pass
 import warnings
@@ -21,7 +21,7 @@ def evaluate_input(inp, model, dataset: Dataset):
 
     for i in range(dataset.input_bounds[sensitive_param_idx][1] + 1):
         for j in range(dataset.input_bounds[sensitive_param_idx][1] + 1):
-            if i != j: 
+            if i < j: 
                 inp0 = [int(k) for k in inp]
                 inp1 = [int(k) for k in inp]
 
@@ -43,8 +43,8 @@ def evaluate_input(inp, model, dataset: Dataset):
                 out0 = model.predict(inp0delY)
                 out1 = model.predict(inp1delY)
             
-                if abs(out1 + out0) == 0: # different results came out, therefore it is biased
-                    return abs(out1 + out0) == 0
+                if abs(out1 - out0) < 0: # different results came out, therefore it is biased
+                    return abs(out1 + out0)
     # return (abs(out0 - out1) > threshold)
     # for binary classification, we have found that the
     # following optimization function gives better results
