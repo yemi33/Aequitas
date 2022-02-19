@@ -7,7 +7,6 @@ def warn(*args, **kwargs):
     pass
 import warnings
 warnings.warn = warn
-<<<<<<< HEAD
 from .mpFully_Direct import mp_basinhopping
 from .Dataset import Dataset
 from scipy.optimize import basinhopping
@@ -15,22 +14,6 @@ from scipy.optimize import basinhopping
 '''
 This is a Aequitas Random Mode
 '''
-=======
-
-from .mpFully_Direct import mp_basinhopping
-from .Dataset import Dataset
-
-from scipy.optimize import basinhopping
-# from random import seed, shuffle
-# import random
-# import math
-# import os
-# from collections import defaultdict
-# from sklearn import svm
-# import sys
-# import urllib2
-# import util.loss_funcs as lf # loss funcs that can be optimized subject to various constraints
->>>>>>> develop
 
 class Random_Select:
     def __init__(self, dataset: Dataset, perturbation_unit, threshold, global_iteration_limit, \
@@ -52,10 +35,6 @@ class Random_Select:
         self.local_iteration_limit = local_iteration_limit
 
         self.init_prob = 0.5
-<<<<<<< HEAD
-=======
-        #self.direction_probability = [self.init_prob] * self.num_params
->>>>>>> develop
         self.direction_probability = [self.init_prob] * len(self.input_bounds)
         self.direction_probability[self.col_to_be_predicted_idx] = 0 # nullify the y col
         self.direction_probability_change_size = 0.001
@@ -67,12 +46,6 @@ class Random_Select:
         self.local_disc_inputs_list = []
         self.tot_inputs = set()
         self.model = joblib.load(input_pkl_dir)
-<<<<<<< HEAD
-=======
-        
-        # self.f = open(retrain_csv_dir, 'w')
-        # self.f.write(",".join(self.column_names) + "\n")
->>>>>>> develop
 
     def local_perturbation(self, x):
         idxes_of_non_y_columns = [i for i in range(len(self.input_bounds))] # we're only perturbing non-y columns right?
@@ -95,17 +68,12 @@ class Random_Select:
         
     def evaluate_global(self, inp):
         inp0 = [int(i) for i in inp]
-<<<<<<< HEAD
         sensValue = inp0[self.sensitive_param_idx]
         
-=======
-        inp0[self.sensitive_param_idx] = 0
->>>>>>> develop
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
         self.tot_inputs.add(tuple(map(tuple, inp0np)))
 
-<<<<<<< HEAD
         inp0 = np.asarray(inp0)
         inp0 = np.reshape(inp0, (1, -1))
 
@@ -135,43 +103,10 @@ class Random_Select:
                     self.global_disc_inputs.add(tuple(map(tuple, inp0)))
                     self.global_disc_inputs_list.append(inp0.tolist()[0])
                     return abs(out0 - out1)
-=======
-        for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
-
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
-
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-                    
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-
-                    if (abs(out0 - out1) > self.threshold and tuple(map(tuple, inp0)) not in self.global_disc_inputs):
-                        self.global_disc_inputs.add(tuple(map(tuple, inp0)))
-                        self.global_disc_inputs_list.append(inp0.tolist()[0])
-                        # self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") 
-                        return abs(out1 + out0)
-
->>>>>>> develop
         return 0
 
     def evaluate_local(self, inp):
         inp0 = [int(i) for i in inp]
-<<<<<<< HEAD
         sensValue = inp0[self.sensitive_param_idx]
 
         inp0np = np.asarray(inp0)
@@ -206,53 +141,13 @@ class Random_Select:
                     self.local_disc_inputs.add(tuple(map(tuple, inp0)))
                     self.local_disc_inputs_list.append(inp0.tolist()[0])
                     return abs(out0 - out1)
-=======
-        inp0[self.sensitive_param_idx] = 0
-        inp0np = np.asarray(inp0)
-        inp0np = np.reshape(inp0, (1, -1))
-        self.tot_inputs.add(tuple(map(tuple, inp0np)))
-        
-        for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
-
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
-
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-                
-                    if (abs(out0 - out1) > self.threshold and (tuple(map(tuple, inp0)) not in self.global_disc_inputs)
-                        and (tuple(map(tuple, inp0)) not in self.local_disc_inputs)):
-                        self.local_disc_inputs.add(tuple(map(tuple, inp0)))
-                        self.local_disc_inputs_list.append(inp0.tolist()[0])
-                        # self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") 
-                        return abs(out0 + out1)
->>>>>>> develop
         return 0
 
 
 def aequitas_random_sklearn(dataset: Dataset, perturbation_unit, threshold, global_iteration_limit,\
          local_iteration_limit, input_pkl_dir, retrain_csv_dir):
-<<<<<<< HEAD
 
     print("Aequitas Random Started...\n")
-=======
->>>>>>> develop
     initial_input = [random.randint(low,high) for [low, high] in dataset.input_bounds]
     minimizer = {"method": "L-BFGS-B"}
 
@@ -269,10 +164,6 @@ def aequitas_random_sklearn(dataset: Dataset, perturbation_unit, threshold, glob
     print()
     print("Starting Local Search")
 
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
     # for inp in random_select.global_disc_inputs_list:
     #     basinhopping(random_select.evaluate_local, inp, stepsize=1.0, take_step=random_select.local_perturbation, minimizer_kwargs=minimizer,
     #                 niter=local_iteration_limit)
@@ -292,11 +183,6 @@ def aequitas_random_sklearn(dataset: Dataset, perturbation_unit, threshold, glob
 
     f.close()
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> develop
     print()
     print("Local Search Finished")
     print("Percentage discriminatory inputs - "  

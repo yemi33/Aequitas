@@ -1,10 +1,5 @@
 from __future__ import division
 import random
-<<<<<<< HEAD
-=======
-
-#import urllib2
->>>>>>> develop
 import numpy as np
 import random
 import time
@@ -16,14 +11,11 @@ def warn(*args, **kwargs):
     pass
 import warnings
 warnings.warn = warn
-<<<<<<< HEAD
 
 '''
 This is a Aequitas Semi Directed Mode
 '''
 
-=======
->>>>>>> develop
 class Semi_Direct:
     def __init__(self, dataset: Dataset, perturbation_unit, threshold, global_iteration_limit, \
                         local_iteration_limit, input_pkl_dir, retrain_csv_dir):
@@ -59,12 +51,6 @@ class Semi_Direct:
         self.input_bounds = dataset.input_bounds
 
         self.model = joblib.load(input_pkl_dir)
-<<<<<<< HEAD
-=======
-
-        # self.f = open(retrain_csv_dir, 'w')
-        # self.f.write(",".join(dataset.column_names) + "\n")
->>>>>>> develop
     
     def local_perturbation(self, x):
         idxes_of_non_y_columns = [i for i in range(len(self.input_bounds))] # we're only perturbing non-y columns right?
@@ -101,7 +87,6 @@ class Semi_Direct:
         return x
 
     def evaluate_input(self, inp):
-<<<<<<< HEAD
         inp0 = [int(k) for k in inp]
         sensValue = inp0[self.sensitive_param_idx]
         inp0 = np.asarray(inp0)
@@ -125,49 +110,16 @@ class Semi_Direct:
 
                 if abs(out1 - out0) > self.threshold:
                     return abs(out1 - out0)
-=======
-        for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
-
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
-
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-                
-                    if abs(out1 + out0):
-                        return abs(out1 + out0)
->>>>>>> develop
         return False
 
     def evaluate_global(self, inp):
         inp0 = [int(i) for i in inp]
-<<<<<<< HEAD
         sensValue = inp0[self.sensitive_param_idx]
 
-=======
-        inp0[self.sensitive_param_idx] = 0
->>>>>>> develop
         inp0np = np.asarray(inp0)
         inp0np = np.reshape(inp0, (1, -1))
         self.tot_inputs.add(tuple(map(tuple, inp0np)))
 
-<<<<<<< HEAD
         inp0 = np.asarray(inp0)
         inp0 = np.reshape(inp0, (1, -1))
 
@@ -196,43 +148,10 @@ class Semi_Direct:
                     self.global_disc_inputs.add(tuple(map(tuple, inp0)))
                     self.global_disc_inputs_list.append(inp0.tolist()[0])
                     return abs(out0 - out1)
-=======
-        for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
-
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
-
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-
-                    if (abs(out0 - out1) > self.threshold and tuple(map(tuple, inp0)) not in self.global_disc_inputs):
-                        self.global_disc_inputs.add(tuple(map(tuple, inp0)))
-                        self.global_disc_inputs_list.append(inp0.tolist()[0])
-                        # self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") # write inputs as they are generated
-                        return abs(out1 + out0)
-
->>>>>>> develop
         return 0
         
     def evaluate_local(self,  inp):
         inp0 = [int(i) for i in inp]
-<<<<<<< HEAD
         sensValue = inp0[self.sensitive_param_idx] 
 
         inp0np = np.asarray(inp0)
@@ -267,53 +186,12 @@ class Semi_Direct:
                     self.local_disc_inputs.add(tuple(map(tuple, inp0)))
                     self.local_disc_inputs_list.append(inp0.tolist()[0])
                     return abs(out0 - out1)
-=======
-        inp0[self.sensitive_param_idx] = 0  
-        inp0np = np.asarray(inp0)
-        inp0np = np.reshape(inp0, (1, -1))
-        self.tot_inputs.add(tuple(map(tuple, inp0np)))
-        
-        for i in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-            for j in range(self.input_bounds[self.sensitive_param_idx][1] + 1):
-                if i < j: 
-                    inp0 = [int(k) for k in inp]
-                    inp1 = [int(k) for k in inp]
-
-                    inp0[self.sensitive_param_idx] = i
-                    inp1[self.sensitive_param_idx] = j
-
-                    inp0 = np.asarray(inp0)
-                    inp0 = np.reshape(inp0, (1, -1))
-
-                    inp1 = np.asarray(inp1)
-                    inp1 = np.reshape(inp1, (1, -1))
-
-                    # drop y column here 
-                    inp0delY = np.delete(inp0, [self.col_to_be_predicted_idx])
-                    inp1delY = np.delete(inp1, [self.col_to_be_predicted_idx])
-                    inp0delY = np.reshape(inp0delY, (1, -1))
-                    inp1delY = np.reshape(inp1delY, (1, -1))
-
-                    out0 = self.model.predict(inp0delY)
-                    out1 = self.model.predict(inp1delY)
-                
-                    if (abs(out0 - out1) > self.threshold and (tuple(map(tuple, inp0)) not in self.global_disc_inputs)
-                        and (tuple(map(tuple, inp0)) not in self.local_disc_inputs)):
-                        self.local_disc_inputs.add(tuple(map(tuple, inp0)))
-                        self.local_disc_inputs_list.append(inp0.tolist()[0])
-                        # self.f.write(",".join(list(map(lambda x: str(x), inp0.tolist()[0]))) + "\n") # write inputs as they are generated
-                        return abs(out0 + out1)
->>>>>>> develop
         return 0
 
 def aequitas_semi_directed_sklearn(dataset: Dataset, perturbation_unit, threshold, global_iteration_limit,\
          local_iteration_limit, input_pkl_dir, retrain_csv_dir):
-<<<<<<< HEAD
     
     print("Aequitas Semi Directed Started...\n")
-=======
-    # initial_input = [7, 4, 26, 1, 4, 4, 0, 0, 0, 1, 5, 73, 1]
->>>>>>> develop
     initial_input = [random.randint(low,high) for [low, high] in dataset.input_bounds]
     minimizer = {"method": "L-BFGS-B"}
 
