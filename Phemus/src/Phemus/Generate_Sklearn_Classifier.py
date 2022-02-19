@@ -1,7 +1,6 @@
 # source: https://www.kaggle.com/yemishin/eda-and-employee-future-prediction
 import pandas as pd
 import joblib
-
 from sklearn.preprocessing import LabelEncoder
 le=LabelEncoder()
 from sklearn.model_selection import train_test_split
