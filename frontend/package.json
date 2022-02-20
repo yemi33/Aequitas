@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://github.com/yemi33/Aequitas",
+  "engines": {
+    "node": "14.17.6",
+    "npm": "6.14.15"
+  },
   "dependencies": {
     "@chakra-ui/react": "^1.7.4",
     "@emotion/react": "^11.7.1",
