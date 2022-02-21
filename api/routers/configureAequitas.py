@@ -1,4 +1,3 @@
-from turtle import update
 from unittest import result
 from django.core.files import File
 from django.http import HttpResponse, FileResponse, JsonResponse
