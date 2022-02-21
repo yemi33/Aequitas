@@ -24,8 +24,8 @@ def runAequitas(request):
       model_type = job.model_type
 
       # possibly refactor to just pass in the json file?
-      dataset = Dataset(num_params, sensitive_param_idx, model_type,
-                        sensitive_param, col_to_be_predicted, dataset_dir)
+      dataset = Dataset(num_params=num_params, sensitive_param_idx=sensitive_param_idx, model_type=model_type,
+                        sensitive_param_name=sensitive_param, col_to_be_predicted=col_to_be_predicted, dataset_dir=dataset_dir)
 
       pkl_dir = job.pkl_dir
       retraining_inputs = job.retraining_inputs
