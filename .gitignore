@@ -110,3 +110,5 @@ credentials.json
 .mypy_cache/
 
 .idea/
+
+.vscode

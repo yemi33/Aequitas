@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0^(=h#!8ye4v$hh)tnlgd+-i5i1fsmj9lyz0f!**-710^g1$=z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '*']
+ALLOWED_HOSTS = ['localhost', 'aequitasweb.herokuapp.com']
 
 CORS_ALLOWED_ORIGINS = [
     "https://example.com",
@@ -137,6 +137,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static')
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 django_heroku.settings(locals())
 
 try:
