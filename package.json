@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "proxy": "https://aequitasweb.herokuapp.com",
   "private": true,
   "engines": {
     "node": "14.17.6",

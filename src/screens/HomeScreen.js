@@ -19,7 +19,7 @@ export default function HomeScreen() {
       bodyFormData.append("dataset", file);
       bodyFormData.append("filename", file.name);
     }
-    Axios.post("http://localhost:8000/api/upload", bodyFormData)
+    Axios.post("/api/upload", bodyFormData)
       .then((response) => {
         console.log("Success", response);
         setUploadSuccess(response);

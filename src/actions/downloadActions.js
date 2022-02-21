@@ -20,7 +20,7 @@ export const downloadRetrainDataset =
     try {
       var fileDownload = require("js-file-download");
       Axios.get(
-        `http://localhost:8000/api/download?target=dataset&jobId=${jobId}`,
+        `/api/download?target=dataset&jobId=${jobId}`,
         {
           responseType: "blob",
         }
@@ -55,7 +55,7 @@ export const downloadRetrainModel =
     try {
       var fileDownload = require("js-file-download");
       Axios.get(
-        `http://localhost:8000/api/download?target=model&jobId=${jobId}`,
+        `/api/download?target=model&jobId=${jobId}`,
         {
           responseType: "blob",
         }

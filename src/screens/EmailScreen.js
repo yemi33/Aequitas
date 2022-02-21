@@ -36,7 +36,7 @@ export default function EmailScreen() {
       const form = document.getElementById("emailForm");
       form.message.value = `Aequitas successfully run! This is the jobId ${jobId}`;
       form.to_name.value = "User";
-      form.link.value = `localhost:3000/result/${jobId}`;
+      form.link.value = `https://aequitasweb.herokuapp.com/result/${jobId}`;
       dispatch(sendEmail(form));
       //navigate(`/result/${jobId}`);
     }

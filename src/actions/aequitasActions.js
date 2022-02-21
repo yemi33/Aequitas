@@ -20,7 +20,7 @@ export const runAequitas = (jobId) => async (dispatch, getState) => {
   });
   try {
     const { data } = await Axios.get(
-      `http://localhost:8000/api/run?jobId=${jobId}`
+      `/api/run?jobId=${jobId}`
     );
     dispatch({ type: RUN_AEQUITAS_SUCCESS, payload: data });
   } catch (error) {
@@ -41,7 +41,7 @@ export const getAequitasResult = (jobId) => async (dispatch, getState) => {
   });
   try {
     const { data } = await Axios.get(
-      `http://localhost:8000/api/getresult?jobId=${jobId}`
+      `/api/getresult?jobId=${jobId}`
     );
     dispatch({ type: GET_AEQUITAS_RESULT_SUCCESS, payload: data });
   } catch (error) {
@@ -62,7 +62,7 @@ export const deleteAequitasResult = (jobId) => async (dispatch, getState) => {
   });
   try {
     const { data } = await Axios.get(
-      `http://localhost:8000/api/deleteresult?jobId=${jobId}`
+      `/api/deleteresult?jobId=${jobId}`
     );
     dispatch({ type: DELETE_AEQUITAS_RESULT_SUCCESS, payload: data });
   } catch (error) {
