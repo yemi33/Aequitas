@@ -1,4 +1,5 @@
 import { createStore, compose, applyMiddleware, combineReducers } from "redux";
+import thunk from "redux-thunk";
 import { aequitasRunReducer, getAequitasResultReducer, deleteAequitasResultReducer } from "./reducers/aequitasReducers";
 import { downloadDatasetReducer, downloadModelReducer } from "./reducers/downloadReducers";
 import { sendEmailReducer } from "./reducers/emailReducers";
