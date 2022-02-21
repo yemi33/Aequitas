@@ -55,7 +55,7 @@ export default function EmailScreen() {
   };
 
   const tryAnotherRound = () => {
-    navigate('/');
+    navigate('https://aequitasweb.herokuapp.com');
   }
 
   return (
