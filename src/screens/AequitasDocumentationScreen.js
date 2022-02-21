@@ -7,6 +7,9 @@ export default function AequitasDocumentationScreen() {
     <div>
       <OurNavbar></OurNavbar>
       <Header>Aequitas Documentations</Header>
+      <div className="container">
+        Coming soon!
+      </div>
       <Footer></Footer>
     </div>
   );
