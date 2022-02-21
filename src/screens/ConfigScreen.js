@@ -6,7 +6,6 @@ import { runAequitas } from "../actions/aequitasActions";
 import LoadingBox from "../components/LoadingBox";
 import Header from "../components/Header";
 import { createUserConfig } from "../actions/submitActions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "../components/Footer";
 
 export default function ConfigScreen() {
