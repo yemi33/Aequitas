@@ -112,3 +112,4 @@ credentials.json
 .idea/
 
 .vscodenode_modules
+npm-debug.log
