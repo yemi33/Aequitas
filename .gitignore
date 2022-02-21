@@ -111,5 +111,6 @@ credentials.json
 
 .idea/
 
-.vscodenode_modules
+.vscode
+node_modules
 npm-debug.log
