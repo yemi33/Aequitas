@@ -1,8 +1,8 @@
 import os, sys
 os.chdir('..')
 sys.path.append(os.getcwd())
-from src.Phemus import *
-# from Phemus import * # <-- use this if loading Phemus from module
+#from src.Phemus import *
+from Phemus import * # <-- use this if loading Phemus from module
 
 def main():
     num_params = 8
