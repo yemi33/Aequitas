@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+#https://towardsdev.com/django-react-app-from-scratch-to-deployment-part-1-8a2fa9a97f1
+
 from pathlib import Path
 import os
 from django.conf import settings
