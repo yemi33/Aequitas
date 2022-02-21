@@ -68,9 +68,9 @@ export default function EmailScreen() {
             Email will be sent to you shortly (~appx 5 minutes) with a link to the result
             summary and improved dataset. You may navigate off the site at this time. Thank you!
           </div>
-          <button className="btn btn-secondary" onClick={tryAnotherRound}>
+          {/* <button className="btn btn-secondary" onClick={tryAnotherRound}>
             Submit another file!
-          </button>
+          </button> */}
         </div>
       )}
       <div className="container">
