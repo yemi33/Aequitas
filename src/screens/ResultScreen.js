@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   downloadRetrainDataset,
   downloadRetrainModel,
@@ -11,7 +11,6 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingBox from "../components/LoadingBox";
 import OurNavbar from "../components/OurNavbar";
-import { DELETE_AEQUITAS_RESULT_RESET } from "../constants/aequitasConstants";
 
 export default function ResultScreen() {
   const { jobId } = useParams();
