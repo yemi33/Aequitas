@@ -1,5 +1,4 @@
 import emailjs from "@emailjs/browser";
-import { init } from "@emailjs/browser";
 import {
   SEND_EMAIL_FAIL,
   SEND_EMAIL_REQUEST,
@@ -7,7 +6,7 @@ import {
 } from "../constants/emailConstants";
 
 export const sendEmail = (form) => async (dispatch, getState) => {
-  init(process.env.REACT_APP_MAIL_USER_ID);
+  emailjs.init(process.env.REACT_APP_MAIL_USER_ID);
   dispatch({
     type: SEND_EMAIL_REQUEST,
     payload: { email: form },

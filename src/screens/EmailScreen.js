@@ -6,7 +6,7 @@ import { updateUserConfig } from "../actions/submitActions";
 import Header from "../components/Header";
 import OurNavbar from "../components/OurNavbar";
 
-export default function EmailScreen() {
+export default function EmailScreen () {
   const { jobId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function EmailScreen() {
       form.to_name.value = "User";
       form.link.value = `https://aequitasweb.herokuapp.com/result/${jobId}`;
       dispatch(sendEmail(form));
-      //navigate(`/result/${jobId}`);
+      // navigate(`/result/${jobId}`);
     }
   }, [configUpdateSuccess, aequitasRunResult]);
 
@@ -68,9 +68,6 @@ export default function EmailScreen() {
             Email will be sent to you shortly (~appx 5 minutes) with a link to the result
             summary and improved dataset. You may navigate off the site at this time. Thank you!
           </div>
-          {/* <button className="btn btn-secondary" onClick={tryAnotherRound}>
-            Submit another file!
-          </button> */}
         </div>
       )}
       <div className="container">
@@ -98,7 +95,7 @@ export default function EmailScreen() {
             />
             {!configUpdateSuccess && (
               <div id="emailHelp" className="form-text">
-                We'll never share your email with anyone else.
+                We&apos;ll never share your email with anyone else.
               </div>
             )}
           </div>

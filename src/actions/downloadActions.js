@@ -33,7 +33,7 @@ export const downloadRetrainDataset =
           console.log(err);
         });
 
-      dispatch({ type: DOWNLOAD_DATASET_SUCCESS, success: true});
+      dispatch({ type: DOWNLOAD_DATASET_SUCCESS, success: true });
     } catch (error) {
       const message =
         error.response && error.response.data.message

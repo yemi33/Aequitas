@@ -1,4 +1,4 @@
-import Axios from "axios";
+import Axios from 'axios';
 import {
   DELETE_AEQUITAS_RESULT_FAIL,
   DELETE_AEQUITAS_RESULT_REQUEST,
@@ -8,8 +8,10 @@ import {
   GET_AEQUITAS_RESULT_SUCCESS,
   RUN_AEQUITAS_FAIL,
   RUN_AEQUITAS_REQUEST,
-  RUN_AEQUITAS_SUCCESS,
-} from "../constants/aequitasConstants";
+  RUN_AEQUITAS_SUCCESS
+} from '../constants/aequitasConstants';
+import WorkerBuilder from './workerBuilder';
+import AequitasWorker from './aequitasWorker.js';
 
 export const runAequitas = (jobId) => async (dispatch, getState) => {
   dispatch({
@@ -19,10 +21,16 @@ export const runAequitas = (jobId) => async (dispatch, getState) => {
     },
   });
   try {
-    const { data } = await Axios.get(
-      `/api/run?jobId=${jobId}`
-    );
-    dispatch({ type: RUN_AEQUITAS_SUCCESS, payload: data });
+    // https://javascript.plainenglish.io/web-worker-in-react-9b2efafe309c
+    const worker = new WorkerBuilder(AequitasWorker);
+    worker.onerror = (e) => { console.log(e) };
+    worker.postMessage({ jobId });
+    worker.onmessage = (e) => {
+      if (e) {
+        dispatch({ type: RUN_AEQUITAS_SUCCESS, payload: e.data });
+        worker.terminate();
+      }
+    }
   } catch (error) {
     const message =
       error.response && error.response.data.message
@@ -30,7 +38,7 @@ export const runAequitas = (jobId) => async (dispatch, getState) => {
         : error.message;
     dispatch({ type: RUN_AEQUITAS_FAIL, payload: message });
   }
-};
+}
 
 export const getAequitasResult = (jobId) => async (dispatch, getState) => {
   dispatch({

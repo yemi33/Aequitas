@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-export default function DragAndDrop({ handleDrop, children }) {
+export default function DragAndDrop ({ handleDrop, children }) {
   const [dragging, setDragging] = useState(false);
-  var dragCounter = 0;
+  let dragCounter = 0;
 
   const overrideEventDefaults = (e) => {
     e.preventDefault();
@@ -21,8 +21,8 @@ export default function DragAndDrop({ handleDrop, children }) {
     if (dragCounter < 0) setDragging(false);
   };
 
-  //https://www.c-sharpcorner.com/article/file-drag-and-drop-feature-in-reactjs/
-  //https://medium.com/@650egor/simple-drag-and-drop-file-upload-in-react-2cb409d88929
+  // https://www.c-sharpcorner.com/article/file-drag-and-drop-feature-in-reactjs/
+  // https://medium.com/@650egor/simple-drag-and-drop-file-upload-in-react-2cb409d88929
   const handleDragAndDropFiles = (e) => {
     overrideEventDefaults(e);
     dragCounter = 0;

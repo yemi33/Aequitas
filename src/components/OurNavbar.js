@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function OurNavbar() {
+export default function OurNavbar () {
   return (
     <nav className="navbar fixed-top navbar-expand-sm navbar-light bg-light">
       <div className="container-fluid">

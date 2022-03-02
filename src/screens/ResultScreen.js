@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   downloadRetrainDataset,
@@ -12,7 +11,7 @@ import Header from "../components/Header";
 import LoadingBox from "../components/LoadingBox";
 import OurNavbar from "../components/OurNavbar";
 
-export default function ResultScreen() {
+export default function ResultScreen () {
   const { jobId } = useParams();
 
   const dispatch = useDispatch();
@@ -33,7 +32,7 @@ export default function ResultScreen() {
       setResultReady(true);
     }
   }, [aequitasRunResult]);
-  
+
   const downloadDatasetHandler = () => {
     dispatch(downloadRetrainDataset(aequitasRunResult.retrainFilename, jobId));
   };
@@ -136,5 +135,5 @@ export default function ResultScreen() {
       </div>
       <Footer></Footer>
     </div>
-  ): "";
+  ) : "";
 }

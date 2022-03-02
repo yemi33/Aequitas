@@ -7,8 +7,9 @@ import LoadingBox from "../components/LoadingBox";
 import Header from "../components/Header";
 import { createUserConfig } from "../actions/submitActions";
 import Footer from "../components/Footer";
+import { RUN_AEQUITAS_SUCCESS } from "../constants/aequitasConstants";
 
-export default function ConfigScreen() {
+export default function ConfigScreen () {
   const { jobId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ export default function ConfigScreen() {
       <div className="container">
         {configCreateResult && (
           <a
-            class="btn btn-secondary"
+            className="btn btn-secondary"
             data-toggle="collapse"
             href="#configForm"
             role="button"
@@ -81,18 +82,18 @@ export default function ConfigScreen() {
               width="16"
               height="16"
               fill="currentColor"
-              class="bi bi-arrows-expand"
+              className="bi bi-arrows-expand"
               viewBox="0 0 16 16"
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8zM7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10z"
               />
             </svg>
             {" "} Configure Again
           </a>
         )}
-        <div class={!configCreateResult ? "collapse show" : "collapse"} id="configForm">
+        <div className={!configCreateResult ? "collapse show" : "collapse"} id="configForm">
           <form onSubmit={submitHandler}>
             <div className="form-group">
               <label htmlFor="sensitiveParamSelect">
@@ -119,7 +120,7 @@ export default function ConfigScreen() {
               <div className="row">
                 <div className="col">
                   <label htmlFor="predictedColSelect">
-                    What are you trying to predict? (aka what is your 'y'?)
+                    What are you trying to predict? (aka what is your &apos;y&apos;?)
                   </label>
                   <select
                     className="form-control"
@@ -142,7 +143,7 @@ export default function ConfigScreen() {
             </div>
             <div className="form-group">
               <label htmlFor="inputThreshold" className="form-label">
-                What is the threshold for 'bias' (How different is 'different')?{" "}
+                What is the threshold for &apos;bias&apos; (How different is &apos;different&apos;)?{" "}
                 <br />
                 (ex. for a binary classifier, threshold is 0 - any difference is
                 difference)

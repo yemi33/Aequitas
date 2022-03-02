@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import OurNavbar from "../components/OurNavbar";
 
-export default function AboutAequitasScreen() {
+export default function AboutAequitasScreen () {
   return (
     <div>
       <OurNavbar></OurNavbar>
@@ -22,9 +22,13 @@ export default function AboutAequitasScreen() {
           <strong>Year</strong>: 2018 <br />
           Liscened by the original authors
         </p>
-        <h3>Download the Aequitas Command Line Utility, <a href="https://pypi.org/project/Phemus/">Phemus!</a></h3>
+        <h3>
+          Download the Aequitas Command Line Utility,{" "}
+          <a href="https://pypi.org/project/Phemus/">Phemus!</a>
+        </h3>
         <p>
-          Phemus is a baby of Aequitas, a tool that gives all the benefits of Aequitas in a simple command-line interface.
+          Phemus is a baby of Aequitas, a tool that gives all the benefits of
+          Aequitas in a simple command-line interface.
         </p>
       </div>
       <Footer></Footer>

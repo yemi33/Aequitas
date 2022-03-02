@@ -7,12 +7,12 @@ import { submitFile } from "../actions/submitActions";
 import DragAndDrop from "../components/DragAndDrop";
 import Footer from "../components/Footer";
 
-export default function HomeScreen() {
+export default function HomeScreen () {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const uploadFileHandler = async (file=null, example=false) => {
+  const uploadFileHandler = async (file = null, example = false) => {
     // Upload the model training data
     const bodyFormData = new FormData();
     if (file && !example) {

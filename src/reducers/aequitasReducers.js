@@ -41,4 +41,4 @@ export const deleteAequitasResultReducer = (state = {}, action) => {
     default:
       return state;
   }
-}
+};

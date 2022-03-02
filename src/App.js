@@ -9,7 +9,7 @@ import AboutUsScreen from "./screens/AboutUsScreen";
 import ConfigScreen from "./screens/ConfigScreen";
 import EmailScreen from "./screens/EmailScreen";
 
-function App() {
+function App () {
   return (
     <BrowserRouter>
       <main>
