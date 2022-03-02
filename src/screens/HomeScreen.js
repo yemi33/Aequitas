@@ -78,7 +78,7 @@ export default function HomeScreen () {
                 </div>
                 {uploadSuccess.status === 200 ? (
                   <div className="alert alert-success" role="alert">
-                    {uploadSuccess.data.message} uploaded successfully.{" "}
+                    {uploadSuccess.data.filename} uploaded successfully.{" "}
                   </div>
                 ) : (
                   <div></div>

@@ -20,7 +20,7 @@ export const submitFile = (jobId) => async (dispatch, getState) => {
   });
   try {
     const { data } = await Axios.get(
-      `/api/config?jobId=${jobId}&example=True`
+      `/api/config?jobId=${jobId}`
     );
     dispatch({ type: SUBMIT_DATASET_SUCCESS, payload: data });
   } catch (error) {
