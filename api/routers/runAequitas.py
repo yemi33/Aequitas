@@ -10,73 +10,71 @@ import json
 from Phemus import *
 import os
 import sys
+import django_rq
+  
+def run(request):
+  jobId = request.GET['jobId']
+  job = AequitasJob.objects.get(id=jobId)
+  dataset_name = job.dataset_name
+  num_params = job.num_params
+  sensitive_param_idx = job.sensitive_param_idx
+  sensitive_param = job.sensitive_param
+  col_to_be_predicted = job.col_to_be_predicted
+  dataset_dir = job.dataset_dir
+  model_type = job.model_type
+
+  # possibly refactor to just pass in the json file?
+  dataset = Dataset(num_params=num_params, sensitive_param_idx=sensitive_param_idx, model_type=model_type,
+                    sensitive_param_name=sensitive_param, col_to_be_predicted=col_to_be_predicted, dataset_dir=dataset_dir)
+
+  pkl_dir = job.pkl_dir
+  retraining_inputs = job.retraining_inputs
+  improved_pkl_dir = job.improved_pkl_dir
+
+  threshold = job.threshold
+  perturbation_unit = job.perturbation_unit
+  
+  # needs to be at least 1000 to be effective
+  global_iteration_limit = job.global_iteration_limit
+  local_iteration_limit = job.local_iteration_limit
+
+  num_trials = job.num_trials
+  samples = job.sample
+  aequitasMode = job.aequitas_mode
+
+  improvement_graph = job.improvement_graph
+  improvement_graph_name = improvement_graph.split('/')[-1]
+  retrainFilename = retraining_inputs.split('/')[-1]
+  retrainModelName = improved_pkl_dir.split('/')[-1]
+
+  if aequitasMode == "Random":
+    run_aequitas(dataset=dataset, perturbation_unit=perturbation_unit, 
+                pkl_dir=pkl_dir, improved_pkl_dir=improved_pkl_dir, 
+                    retrain_csv_dir=retraining_inputs, plot_dir=improvement_graph, mode="Random", threshold=threshold)
+  elif aequitasMode == "SemiDirected":
+    run_aequitas(dataset=dataset, perturbation_unit=perturbation_unit, 
+                pkl_dir=pkl_dir, improved_pkl_dir=improved_pkl_dir, 
+                    retrain_csv_dir=retraining_inputs, plot_dir=improvement_graph, mode="Semi", threshold=threshold)
+  elif aequitasMode == "FullyDirected":
+    run_aequitas(dataset=dataset, perturbation_unit=perturbation_unit, 
+                pkl_dir=pkl_dir, improved_pkl_dir=improved_pkl_dir, 
+                    retrain_csv_dir=retraining_inputs, plot_dir=improvement_graph, mode="Fully", threshold=threshold)
+
+  fairnessEstimation = get_fairness_estimation(dataset, pkl_dir, threshold, num_trials, samples)  # can we make this its own function
+  imageId = uploadImage(improvement_graph_name, improvement_graph, jobId)
+  # https://dev.to/imamcu07/embed-or-display-image-to-html-page-from-google-drive-3ign
+  sharingLink = f'https://drive.google.com/uc?id={imageId}'
+  job.improvement_graph = sharingLink
+  job.fairness_estimation = '{0:.2f}'.format(float(fairnessEstimation))
+  job.save()
 
 def runAequitas(request):
-    if request.method == 'GET':
-      jobId = request.GET['jobId']
-      job = AequitasJob.objects.get(id=jobId)
-      dataset_name = job.dataset_name
-      num_params = job.num_params
-      sensitive_param_idx = job.sensitive_param_idx
-      sensitive_param = job.sensitive_param
-      col_to_be_predicted = job.col_to_be_predicted
-      dataset_dir = job.dataset_dir
-      model_type = job.model_type
-
-      # possibly refactor to just pass in the json file?
-      dataset = Dataset(num_params=num_params, sensitive_param_idx=sensitive_param_idx, model_type=model_type,
-                        sensitive_param_name=sensitive_param, col_to_be_predicted=col_to_be_predicted, dataset_dir=dataset_dir)
-
-      pkl_dir = job.pkl_dir
-      retraining_inputs = job.retraining_inputs
-      improved_pkl_dir = job.improved_pkl_dir
-
-      threshold = job.threshold
-      perturbation_unit = job.perturbation_unit
-      
-      # needs to be at least 1000 to be effective
-      global_iteration_limit = job.global_iteration_limit
-      local_iteration_limit = job.local_iteration_limit
-
-      num_trials = job.num_trials
-      samples = job.sample
-      aequitasMode = job.aequitas_mode
-
-      improvement_graph = job.improvement_graph
-      improvement_graph_name = improvement_graph.split('/')[-1]
-      retrainFilename = retraining_inputs.split('/')[-1]
-      retrainModelName = improved_pkl_dir.split('/')[-1]
-
-      if aequitasMode == "Random":
-        run_aequitas(dataset=dataset, perturbation_unit=perturbation_unit, 
-                    pkl_dir=pkl_dir, improved_pkl_dir=improved_pkl_dir, 
-                        retrain_csv_dir=retraining_inputs, plot_dir=improvement_graph, mode="Random", threshold=threshold)
-      elif aequitasMode == "SemiDirected":
-        run_aequitas(dataset=dataset, perturbation_unit=perturbation_unit, 
-                    pkl_dir=pkl_dir, improved_pkl_dir=improved_pkl_dir, 
-                        retrain_csv_dir=retraining_inputs, plot_dir=improvement_graph, mode="Semi", threshold=threshold)
-      elif aequitasMode == "FullyDirected":
-        run_aequitas(dataset=dataset, perturbation_unit=perturbation_unit, 
-                    pkl_dir=pkl_dir, improved_pkl_dir=improved_pkl_dir, 
-                        retrain_csv_dir=retraining_inputs, plot_dir=improvement_graph, mode="Fully", threshold=threshold)
-    
-      fairnessEstimation = get_fairness_estimation(dataset, pkl_dir, threshold, num_trials, samples)  # can we make this its own function
-      imageId = uploadImage(improvement_graph_name, improvement_graph, jobId)
-      # https://dev.to/imamcu07/embed-or-display-image-to-html-page-from-google-drive-3ign
-      sharingLink = f'https://drive.google.com/uc?id={imageId}'
-      job.improvement_graph = sharingLink
-      job.fairness_estimation = '{0:.2f}'.format(float(fairnessEstimation))
-      job.save()
+    if request.method == 'GET': 
+      queue = django_rq.get_queue('high')
+      job = q.enqueue(run, request)
 
       response = JsonResponse({
-                              'status': 'Success',
-                              'jobId': jobId,
-                              'datasetName': dataset_name,
-                              'aequitasMode': aequitasMode,
-                              'fairnessEstimation': fairnessEstimation,
-                              'retrainFilename': retrainFilename,
-                              'retrainModelName': retrainModelName,
-                              'improvementGraph': sharingLink
+                              'status': 'Pending'
                               })
       return response
 

@@ -4,6 +4,7 @@ import {
   DELETE_AEQUITAS_RESULT_REQUEST,
   DELETE_AEQUITAS_RESULT_SUCCESS,
   GET_AEQUITAS_RESULT_FAIL,
+  GET_AEQUITAS_RESULT_PENDING,
   GET_AEQUITAS_RESULT_REQUEST,
   GET_AEQUITAS_RESULT_SUCCESS,
   RUN_AEQUITAS_FAIL,
@@ -51,7 +52,11 @@ export const getAequitasResult = (jobId) => async (dispatch, getState) => {
     const { data } = await Axios.get(
       `/api/getresult?jobId=${jobId}`
     );
-    dispatch({ type: GET_AEQUITAS_RESULT_SUCCESS, payload: data });
+    if (data.status === 'Pending') {
+      dispatch({ type: GET_AEQUITAS_RESULT_PENDING, payload: data });
+    } else {
+      dispatch({ type: GET_AEQUITAS_RESULT_SUCCESS, payload: data });
+    }
   } catch (error) {
     const message =
       error.response && error.response.data.message

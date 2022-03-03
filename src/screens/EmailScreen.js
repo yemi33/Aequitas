@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { getAequitasResult } from "../actions/aequitasActions";
 import { sendEmail } from "../actions/emailActions";
 import { updateUserConfig } from "../actions/submitActions";
 import Header from "../components/Header";
@@ -11,11 +12,7 @@ export default function EmailScreen () {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {
-    aequitasRunResult,
-    loading: runAequitasLoading,
-    error: runAequitasError,
-  } = useSelector((state) => state.aequitasRunResult);
+  const getAequitasResult = useSelector((state) => state.getAequitasResult);
 
   const {
     configUpdateResult,
@@ -32,15 +29,18 @@ export default function EmailScreen () {
   } = sendEmailResult;
 
   useEffect(() => {
-    if (configUpdateSuccess && aequitasRunResult) {
+    if (!getAequitasResult || getAequitasResult.status === "Pending") {
+      setTimeout(function () {
+        dispatch(getAequitasResult(jobId));
+      }, 1000);
+    } else if (configUpdateSuccess && getAequitasResult) {
       const form = document.getElementById("emailForm");
       form.message.value = `Aequitas successfully run! This is the jobId ${jobId}`;
       form.to_name.value = "User";
       form.link.value = `https://aequitasweb.herokuapp.com/result/${jobId}`;
       dispatch(sendEmail(form));
-      // navigate(`/result/${jobId}`);
     }
-  }, [configUpdateSuccess, aequitasRunResult]);
+  }, [configUpdateSuccess, getAequitasResult]);
 
   const [email, setEmail] = useState("");
 
@@ -54,7 +54,7 @@ export default function EmailScreen () {
     dispatch(updateUserConfig(bodyFormData));
   };
 
-  const tryAnotherRound = () => {
+  const tryAnotherRound = () => { // not being used currently cuz buggy
     navigate('/');
   }
 
