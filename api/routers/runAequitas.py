@@ -11,6 +11,7 @@ from Phemus import *
 import os
 import sys
 import django_rq
+import redis
   
 def run(request):
   jobId = request.GET['jobId']
@@ -70,8 +71,9 @@ def run(request):
 
 def runAequitas(request):
     if request.method == 'GET': 
-      queue = django_rq.get_queue('high')
-      job = q.enqueue(run, request)
+      redis_cursor = redis.StrictRedis(host='', port='', db='', password='')
+      queue = django_rq.get_queue('high', connection=redis_cursor)
+      job = queue.enqueue(run, request)
 
       response = JsonResponse({
                               'status': 'Pending'
