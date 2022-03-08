@@ -10,10 +10,11 @@ import json
 from Phemus import *
 import os
 import sys
-import django_rq
-import redis
-  
-def run(jobId):
+import asyncio
+from asgiref.sync import sync_to_async
+
+@sync_to_async
+def aequitasTask(jobId):
   job = AequitasJob.objects.get(id=jobId)
   dataset_name = job.dataset_name
   num_params = job.num_params
@@ -70,11 +71,9 @@ def run(jobId):
 
 def runAequitas(request):
     if request.method == 'GET': 
-      redis_cursor = redis.StrictRedis(host='aequitasweb.herokuapp.com', port='6379', db='0', password='')
-      queue = django_rq.get_queue('high', connection=redis_cursor)
+      
       jobId = request.GET['jobId']
-      job = queue.enqueue(run, jobId)
-
+      asyncio.create_task(aequitasTask(jobId))
       response = JsonResponse({
                               'status': 'Pending'
                               })
