@@ -10,10 +10,9 @@ import json
 from Phemus import *
 import os
 import sys
-import asyncio
-from asgiref.sync import sync_to_async
+import rq
 
-@sync_to_async
+@job
 def aequitasTask(jobId):
   job = AequitasJob.objects.get(id=jobId)
   dataset_name = job.dataset_name
@@ -71,11 +70,12 @@ def aequitasTask(jobId):
 
 def runAequitas(request):
     if request.method == 'GET': 
-      
+      # https://agrahariyash.medium.com/asynchronous-task-queues-in-the-django-world-a5d9be407e18
+      # https://medium.com/@kass09/rq-simplest-job-queueing-in-python-3dc5f2611796
+      rq.use_connection()
+      qs = rq.Queue()
       jobId = request.GET['jobId']
-      job = sync_to_async()
-      asyncio.ensure_future(aequitasTask(jobId))
-      loop.create_task(aequitasTask(jobId))
+      qs.enqueue(aequitasTask, jobId)
       response = JsonResponse({
                               'status': 'Pending'
                               })

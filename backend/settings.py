@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api',
+    'django_rq'
 ]
 
 MIDDLEWARE = [
@@ -156,4 +157,3 @@ except ImportError:
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 FILES_DIRS = [os.path.join(BASE_DIR, 'build', 'static')]
-
