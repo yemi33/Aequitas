@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-print("inside utils.py", os.getcwd())
 
 def get_input_bounds(input_file, sensitive_col_name):
     input_bounds = []

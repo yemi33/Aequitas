@@ -13,8 +13,7 @@ import sys
 import django_rq
 import redis
   
-def run(request):
-  jobId = request.GET['jobId']
+def run(jobId):
   job = AequitasJob.objects.get(id=jobId)
   dataset_name = job.dataset_name
   num_params = job.num_params
@@ -73,7 +72,8 @@ def runAequitas(request):
     if request.method == 'GET': 
       redis_cursor = redis.StrictRedis(host='', port='', db='', password='')
       queue = django_rq.get_queue('high', connection=redis_cursor)
-      job = queue.enqueue(run, request)
+      jobId = request.GET['jobId']
+      job = queue.enqueue(run, jobId)
 
       response = JsonResponse({
                               'status': 'Pending'
