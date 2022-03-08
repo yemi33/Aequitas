@@ -70,8 +70,8 @@ def run(jobId):
 
 def runAequitas(request):
     if request.method == 'GET': 
-      redis_cursor = redis.StrictRedis(host='', port='', db='', password='')
-      queue = django_rq.get_queue('high', connection=redis_cursor)
+      # redis_cursor = redis.StrictRedis(host='', port='', db='', password='')
+      queue = django_rq.get_queue('high')
       jobId = request.GET['jobId']
       job = queue.enqueue(run, jobId)
 
