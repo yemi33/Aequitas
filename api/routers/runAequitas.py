@@ -73,7 +73,9 @@ def runAequitas(request):
     if request.method == 'GET': 
       
       jobId = request.GET['jobId']
-      asyncio.create_task(aequitasTask(jobId))
+      job = sync_to_async()
+      asyncio.ensure_future(aequitasTask(jobId))
+      loop.create_task(aequitasTask(jobId))
       response = JsonResponse({
                               'status': 'Pending'
                               })
