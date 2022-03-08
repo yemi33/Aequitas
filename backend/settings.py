@@ -16,6 +16,7 @@ from pathlib import Path
 import os
 from django.conf import settings
 import django_heroku
+import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -177,7 +178,7 @@ RQ_QUEUES = {
         },
     },
     'high': {
-        'URL': os.getenv('REDISTOGO_URL', 'redis://localhost:6379/0'), # If you're on Heroku
+        'URL': os.getenv('REDISTOGO_URL', 'redis://aequitasweb.herokuapp.com:6379/0'), # If you're on Heroku
         'DEFAULT_TIMEOUT': 500,
     },
     'low': {
