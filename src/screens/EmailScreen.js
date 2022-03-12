@@ -30,9 +30,10 @@ export default function EmailScreen () {
   } = sendEmailResult;
 
   const [emailSent, setEmailSent] = useState(false);
+  const [aequitasGetResultSuccess, setAequitasGetResultSuccess] = useState(false);
 
   useEffect(() => {
-    if (!aequitasRunResult || status === "Pending") {
+    if ((!aequitasRunResult || status === "Pending") && !aequitasGetResultSuccess) {
       setTimeout(() => {
         dispatch(getAequitasResult(jobId));
       }, 10000);
@@ -42,6 +43,7 @@ export default function EmailScreen () {
       form.to_name.value = "User";
       form.link.value = `https://aequitasweb.herokuapp.com/result/${jobId}`;
       setEmailSent(true);
+      setAequitasGetResultSuccess(true);
       dispatch(sendEmail(form));
     }
   }, [configUpdateSuccess, aequitasRunResult, status, emailSent]);
