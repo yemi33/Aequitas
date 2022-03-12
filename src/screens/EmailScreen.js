@@ -29,21 +29,24 @@ export default function EmailScreen () {
     error: sendEmailError,
   } = sendEmailResult;
 
+  const [emailSent, setEmailSent] = useState(false);
+
   useEffect(() => {
     if (!aequitasRunResult || status === "Pending") {
       console.log("checking it again in a few");
       setTimeout(function () {
         dispatch(getAequitasResult(jobId));
       }, 10000);
-    } else if (configUpdateSuccess && aequitasRunResult && status === "Success") {
+    } else if (configUpdateSuccess && aequitasRunResult && status === "Success" && !emailSent) {
       console.log(aequitasRunResult);
       const form = document.getElementById("emailForm");
       form.message.value = `Aequitas successfully run! This is the jobId ${jobId}`;
       form.to_name.value = "User";
       form.link.value = `https://aequitasweb.herokuapp.com/result/${jobId}`;
+      setEmailSent(true);
       dispatch(sendEmail(form));
     }
-  }, [configUpdateSuccess, aequitasRunResult, status]);
+  }, [configUpdateSuccess, aequitasRunResult, status, emailSent]);
 
   const [email, setEmail] = useState("");
 
