@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import OurNavbar from "../components/OurNavbar";
 import { runAequitas } from "../actions/aequitasActions";
@@ -38,7 +38,7 @@ export default function ConfigScreen () {
   useEffect(() => {
     setSensitiveParam(document.getElementById("sensitiveParamSelect").value);
     setPredictedCol(document.getElementById("predictedColSelect").value);
-    setGetModel(document.getElementById("getModelCheck").checked);
+    // setGetModel(document.getElementById("getModelCheck").checked);
     setModelType(document.getElementById("modelTypeSelect").value);
     setAequitasMode(document.getElementById("aequitasModeSelect").value);
     setThreshold(document.getElementById("inputThreshold").value);
@@ -55,7 +55,9 @@ export default function ConfigScreen () {
     bodyFormData.append("modelType", modelType);
     bodyFormData.append("aequitasMode", aequitasMode);
     bodyFormData.append("threshold", threshold);
-    dispatch(createUserConfig(bodyFormData));
+    if (sensitiveParam !== predictedCol) {
+      dispatch(createUserConfig(bodyFormData));
+    }
   };
 
   const clickHandler = () => {
@@ -68,6 +70,22 @@ export default function ConfigScreen () {
       <OurNavbar></OurNavbar>
       <Header>Aequitas Configuration for {filename}</Header>
       <div className="container">
+        <a href="/">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className="bi bi-arrow-left"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fillRule="evenodd"
+              d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+            />
+          </svg>
+          {" "} Back
+        </a>
         {configCreateResult && (
           <a
             className="btn btn-secondary"
@@ -89,15 +107,18 @@ export default function ConfigScreen () {
                 fillRule="evenodd"
                 d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8zM7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10z"
               />
-            </svg>
-            {" "} Configure Again
+            </svg>{" "}
+            Configure Again
           </a>
         )}
-        <div className={!configCreateResult ? "collapse show" : "collapse"} id="configForm">
+        <div
+          className={!configCreateResult ? "collapse show" : "collapse"}
+          id="configForm"
+        >
           <form onSubmit={submitHandler}>
             <div className="form-group">
               <label htmlFor="sensitiveParamSelect">
-                <br/>
+                <br />
                 What is the sensitive parameter you would like to check the
                 biasedness of?
               </label>
@@ -120,7 +141,8 @@ export default function ConfigScreen () {
               <div className="row">
                 <div className="col">
                   <label htmlFor="predictedColSelect">
-                    What are you trying to predict? (aka what is your &apos;y&apos;?)
+                    What are you trying to predict? (aka what is your
+                    &apos;y&apos;?)
                   </label>
                   <select
                     className="form-control"
@@ -141,10 +163,15 @@ export default function ConfigScreen () {
                 </div>
               </div>
             </div>
+            {sensitiveParam === predictedCol && (
+              <div className="alert alert-danger" role="alert">
+                Sensitive feature cannot be the same as the predicted column.
+              </div>
+            )}
             <div className="form-group">
               <label htmlFor="inputThreshold" className="form-label">
-                What is the threshold for &apos;bias&apos; (How different is &apos;different&apos;)?{" "}
-                <br />
+                What is the threshold for &apos;bias&apos; (How different is
+                &apos;different&apos;)? <br />
                 (ex. for a binary classifier, threshold is 0 - any difference is
                 difference)
               </label>
@@ -233,7 +260,7 @@ export default function ConfigScreen () {
                 ))}
               </select>
             </div>
-            <div className="form-check">
+            {/* <div className="form-check">
               <input
                 className="form-check-input"
                 type="checkbox"
@@ -244,7 +271,7 @@ export default function ConfigScreen () {
               <label className="form-check-label" htmlFor="getModelCheck">
                 Do you want to train a model with the improved dataset?
               </label>
-            </div>
+            </div> */}
             {getModel && (
               <div className="form-group">
                 <label htmlFor="modelTypeSelect">Select a model type.</label>
@@ -291,10 +318,10 @@ export default function ConfigScreen () {
             >
               Run Aequitas
             </button>
-
           </div>
         )}
-        <br/><br/>
+        <br />
+        <br />
       </div>
       <Footer></Footer>
     </div>
