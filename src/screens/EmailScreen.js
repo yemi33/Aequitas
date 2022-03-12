@@ -12,7 +12,8 @@ export default function EmailScreen () {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const getAequitasResult = useSelector((state) => state.getAequitasResult);
+  const result = useSelector((state) => state.getAequitasResult);
+  const { aequitasRunResult, loading, error, status } = result;
 
   const {
     configUpdateResult,
@@ -29,18 +30,20 @@ export default function EmailScreen () {
   } = sendEmailResult;
 
   useEffect(() => {
-    if (!getAequitasResult || getAequitasResult.status === "Pending") {
+    if (!aequitasRunResult || status === "Pending") {
+      console.log("checking it again in a few");
       setTimeout(function () {
         dispatch(getAequitasResult(jobId));
-      }, 1000);
-    } else if (configUpdateSuccess && getAequitasResult) {
+      }, 10000);
+    } else if (configUpdateSuccess && aequitasRunResult && status === "Success") {
+      console.log(aequitasRunResult);
       const form = document.getElementById("emailForm");
       form.message.value = `Aequitas successfully run! This is the jobId ${jobId}`;
       form.to_name.value = "User";
       form.link.value = `https://aequitasweb.herokuapp.com/result/${jobId}`;
       dispatch(sendEmail(form));
     }
-  }, [configUpdateSuccess, getAequitasResult]);
+  }, [configUpdateSuccess, aequitasRunResult, status]);
 
   const [email, setEmail] = useState("");
 

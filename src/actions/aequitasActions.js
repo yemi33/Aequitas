@@ -23,14 +23,20 @@ export const runAequitas = (jobId) => async (dispatch, getState) => {
   });
   try {
     // https://javascript.plainenglish.io/web-worker-in-react-9b2efafe309c
-    const worker = new WorkerBuilder(AequitasWorker);
-    worker.onerror = (e) => { console.log(e) };
-    worker.postMessage({ jobId });
-    worker.onmessage = (e) => {
-      if (e) {
-        dispatch({ type: RUN_AEQUITAS_SUCCESS, payload: e.data });
-        worker.terminate();
-      }
+    // const worker = new WorkerBuilder(AequitasWorker);
+    // worker.onerror = (e) => { console.log(e) };
+    // worker.postMessage({ jobId });
+    // worker.onmessage = (e) => {
+    //   if (e) {
+    //     dispatch({ type: RUN_AEQUITAS_SUCCESS, payload: e.data });
+    //     worker.terminate();
+    //   }
+    // }
+    // https://stackoverflow.com/questions/52372516/fetch-in-a-web-worker-using-react
+    // axios doesn't work within web workers because of different scopes
+    const { data } = await Axios.get(`/api/run?jobId=${jobId}`);
+    if (data) {
+      dispatch({ type: RUN_AEQUITAS_SUCCESS, payload: data });
     }
   } catch (error) {
     const message =

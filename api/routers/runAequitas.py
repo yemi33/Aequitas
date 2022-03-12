@@ -6,15 +6,17 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
+from concurrent import futures
 import json
 from Phemus import *
 import os
 import sys
-import rq
+import asyncio
+import threading
 
-@job
 def aequitasTask(jobId):
   job = AequitasJob.objects.get(id=jobId)
+  print("job started")
   dataset_name = job.dataset_name
   num_params = job.num_params
   sensitive_param_idx = job.sensitive_param_idx
@@ -72,10 +74,11 @@ def runAequitas(request):
     if request.method == 'GET': 
       # https://agrahariyash.medium.com/asynchronous-task-queues-in-the-django-world-a5d9be407e18
       # https://medium.com/@kass09/rq-simplest-job-queueing-in-python-3dc5f2611796
-      rq.use_connection()
-      qs = rq.Queue()
       jobId = request.GET['jobId']
-      qs.enqueue(aequitasTask, jobId)
+      t = threading.Thread(target=aequitasTask, args=[jobId])
+      t.setDaemon(False)
+      t.start()
+      print("thread started")      
       response = JsonResponse({
                               'status': 'Pending'
                               })

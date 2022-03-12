@@ -31,7 +31,7 @@ export default function ResultScreen () {
     } else {
       setResultReady(true);
     }
-  }, [aequitasRunResult]);
+  }, [aequitasRunResult, resultReady, setResultReady]);
 
   const downloadDatasetHandler = () => {
     dispatch(downloadRetrainDataset(aequitasRunResult.retrainFilename, jobId));
@@ -47,7 +47,7 @@ export default function ResultScreen () {
     dispatch(deleteAequitasResult(jobId));
   });
 
-  return resultReady ? (
+  return resultReady || aequitasRunResult ? (
     <div>
       <OurNavbar></OurNavbar>
       <Header>
