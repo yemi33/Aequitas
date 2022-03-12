@@ -32,13 +32,11 @@ export default function EmailScreen () {
   const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
-    if (status === "Pending") {
-      console.log(aequitasRunResult);
-      console.log("checking it again in a few");
-      dispatch(getAequitasResult(jobId));
-      setTimeout(10000);
+    if (!aequitasRunResult || status === "Pending") {
+      setTimeout(() => {
+        dispatch(getAequitasResult(jobId));
+      }, 10000);
     } else if (configUpdateSuccess && aequitasRunResult && status === "Success" && !emailSent) {
-      console.log(aequitasRunResult);
       const form = document.getElementById("emailForm");
       form.message.value = `Aequitas successfully run! This is the jobId ${jobId}`;
       form.to_name.value = "User";
