@@ -35,9 +35,8 @@ export default function EmailScreen () {
     if (status === "Pending") {
       console.log(aequitasRunResult);
       console.log("checking it again in a few");
-      setTimeout(function () {
-        dispatch(getAequitasResult(jobId));
-      }, 10000);
+      dispatch(getAequitasResult(jobId));
+      setTimeout(10000);
     } else if (configUpdateSuccess && aequitasRunResult && status === "Success" && !emailSent) {
       console.log(aequitasRunResult);
       const form = document.getElementById("emailForm");
