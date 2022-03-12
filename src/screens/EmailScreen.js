@@ -32,7 +32,8 @@ export default function EmailScreen () {
   const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
-    if (!aequitasRunResult || status === "Pending") {
+    if (loading || status === "Pending") {
+      console.log(aequitasRunResult);
       console.log("checking it again in a few");
       setTimeout(function () {
         dispatch(getAequitasResult(jobId));
@@ -46,7 +47,7 @@ export default function EmailScreen () {
       setEmailSent(true);
       dispatch(sendEmail(form));
     }
-  }, [configUpdateSuccess, aequitasRunResult, status, emailSent]);
+  }, [configUpdateSuccess, aequitasRunResult, status, emailSent, loading]);
 
   const [email, setEmail] = useState("");
 
